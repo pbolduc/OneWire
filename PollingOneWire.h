@@ -19,4 +19,5 @@ class PollingOneWire : public OneWire {
     // Returns ONEWIRE_RESET_PULL_LOW_DELAY the code needs to wait 480us
     // Returns ONEWIRE_RESET_PRESENCE_DELAY the code needs to wait 410us
     uint8_t polling_reset(void);
-}
+};
+
