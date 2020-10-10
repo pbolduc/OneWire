@@ -32,7 +32,7 @@ uint8_t NOT_IN_FLASH PollingOneWire::polling_reset(void)
   // RESET_ASYNC_NOT_STARTED
   // --------------------------------------------------------
   // state 0 means we have not started the reset cycle
-  if (reset_async_state == RESET_ASYNC_NOT_STARTED) {
+  if (polling_reset_state == RESET_ASYNC_NOT_STARTED) {
     noInterrupts();
     DIRECT_MODE_INPUT(reg, mask);
     interrupts();
@@ -47,8 +47,8 @@ uint8_t NOT_IN_FLASH PollingOneWire::polling_reset(void)
     DIRECT_MODE_OUTPUT(reg, mask);	// drive output low
     interrupts();
 
-    reset_async_state = RESET_ASYNC_PULL_LOW_DELAY;
-    reset_async_time = micros();
+    polling_reset_state = RESET_ASYNC_PULL_LOW_DELAY;
+    polling_reset_time = micros();
     return ONEWIRE_RESET_PULL_LOW_DELAY;
   }
 
@@ -57,8 +57,8 @@ uint8_t NOT_IN_FLASH PollingOneWire::polling_reset(void)
   // --------------------------------------------------------
   // state 1 means have pulled down the bus and need to keep it
   // low for at least 480us
-  if (reset_async_state == RESET_ASYNC_PULL_LOW_DELAY) {
-    if (micros() - reset_async_time < 480) {
+  if (polling_reset_state == RESET_ASYNC_PULL_LOW_DELAY) {
+    if (micros() - polling_reset_time < 480) {
       return ONEWIRE_RESET_PULL_LOW_DELAY;
     }
 
@@ -72,20 +72,20 @@ uint8_t NOT_IN_FLASH PollingOneWire::polling_reset(void)
       return ONEWIRE_RESET_NO_DEVICES;
     }
 
-    reset_async_state = RESET_ASYNC_POST_PRESENCE_DELAY;
-    reset_async_time = micros();
+    polling_reset_state = RESET_ASYNC_POST_PRESENCE_DELAY;
+    polling_reset_time = micros();
     return ONEWIRE_RESET_ASYNC_PRESENCE_DELAY;
   }
 
   // --------------------------------------------------------
   // RESET_ASYNC_POST_PRESENCE_DELAY
   // --------------------------------------------------------
-  if (reset_async_state == RESET_ASYNC_POST_PRESENCE_DELAY) {
-    if (micros() - reset_async_time < 410) {
+  if (polling_reset_state == RESET_ASYNC_POST_PRESENCE_DELAY) {
+    if (micros() - polling_reset_time < 410) {
       return ONEWIRE_RESET_ASYNC_PRESENCE_DELAY;
     }
   }
 
-  reset_async_state = RESET_ASYNC_NOT_STARTED; // done
+  polling_reset_state = RESET_ASYNC_NOT_STARTED; // done
   return ONEWIRE_RESET_OK;
 }
