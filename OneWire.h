@@ -56,10 +56,11 @@
 
 class OneWire
 {
-  private:
+  protected:
     IO_REG_TYPE bitmask;
     volatile IO_REG_TYPE *baseReg;
 
+  private:
 #if ONEWIRE_SEARCH
     // global search state
     unsigned char ROM_NO[8];
