@@ -143,6 +143,15 @@ sample code bearing this copyright.
 #include "OneWire.h"
 #include "util/OneWire_direct_gpio.h"
 
+#ifdef ARDUINO_ARCH_ESP32
+// due to the dual core esp32, a critical section works better than disabling interrupts
+#  define noInterrupts() {portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;portENTER_CRITICAL(&mux)
+#  define interrupts() portEXIT_CRITICAL(&mux);}
+// for info on this, search "IRAM_ATTR" at https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/general-notes.html 
+#  define NOT_IN_FLASH IRAM_ATTR
+#else
+#  define NOT_IN_FLASH 
+#endif
 
 void OneWire::begin(uint8_t pin)
 {
@@ -161,7 +170,7 @@ void OneWire::begin(uint8_t pin)
 //
 // Returns 1 if a device asserted a presence pulse, 0 otherwise.
 //
-uint8_t OneWire::reset(void)
+uint8_t NOT_IN_FLASH OneWire::reset(void)
 {
 	IO_REG_TYPE mask IO_REG_MASK_ATTR = bitmask;
 	volatile IO_REG_TYPE *reg IO_REG_BASE_ATTR = baseReg;
@@ -195,7 +204,7 @@ uint8_t OneWire::reset(void)
 // Write a bit. Port and bit is used to cut lookup time and provide
 // more certain timing.
 //
-void OneWire::write_bit(uint8_t v)
+void NOT_IN_FLASH OneWire::write_bit(uint8_t v)
 {
 	IO_REG_TYPE mask IO_REG_MASK_ATTR = bitmask;
 	volatile IO_REG_TYPE *reg IO_REG_BASE_ATTR = baseReg;
@@ -223,7 +232,7 @@ void OneWire::write_bit(uint8_t v)
 // Read a bit. Port and bit is used to cut lookup time and provide
 // more certain timing.
 //
-uint8_t OneWire::read_bit(void)
+uint8_t NOT_IN_FLASH OneWire::read_bit(void)
 {
 	IO_REG_TYPE mask IO_REG_MASK_ATTR = bitmask;
 	volatile IO_REG_TYPE *reg IO_REG_BASE_ATTR = baseReg;
