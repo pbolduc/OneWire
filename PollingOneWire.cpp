@@ -1,4 +1,6 @@
+#include <Arduino.h>
 #include "PollingOneWire.h"
+#include "util/OneWire_direct_gpio.h"
 
 #ifdef ARDUINO_ARCH_ESP32
 // due to the dual core esp32, a critical section works better than disabling interrupts

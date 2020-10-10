@@ -1,8 +1,6 @@
 #include <Arduino.h>
 #include "OneWire.h"
 
-
-
 class PollingOneWire : public OneWire {
 
   private:
