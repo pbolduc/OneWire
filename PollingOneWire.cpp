@@ -27,6 +27,7 @@ uint8_t NOT_IN_FLASH PollingOneWire::polling_reset(void)
 	IO_REG_TYPE mask IO_REG_MASK_ATTR = bitmask;
 	volatile IO_REG_TYPE *reg IO_REG_BASE_ATTR = baseReg;
 	uint8_t retries = 125;
+  uint8_t r;
 
   // --------------------------------------------------------
   // POLLING_RESET_NOT_STARTED
@@ -49,7 +50,7 @@ uint8_t NOT_IN_FLASH PollingOneWire::polling_reset(void)
 
     polling_reset_state = POLLING_RESET_PULL_LOW_DELAY;
     polling_reset_time = micros();
-    return ONEWIRE_RESET_PULL_LOW_DELAY;
+    return POLLING_RESET_PULL_LOW_DELAY;
   }
 
   // --------------------------------------------------------
@@ -65,7 +66,7 @@ uint8_t NOT_IN_FLASH PollingOneWire::polling_reset(void)
     noInterrupts();
     DIRECT_MODE_INPUT(reg, mask);	// allow it to float
     delayMicroseconds(70);
-    uint8_t r = !DIRECT_READ(reg, mask);
+    r = !DIRECT_READ(reg, mask);
     interrupts();
 
     if (r != 1) {
